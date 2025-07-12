@@ -1,0 +1,26 @@
+{
+  "name": "mementoria",
+  "private": true,
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "build": "turbo run build",
+    "check": "turbo run check",
+    "check-fix": "turbo run check-fix",
+    "dev": "turbo run dev",
+    "format": "turbo run format",
+    "lint": "turbo run lint",
+    "serve": "turbo run serve",
+    "start": "turbo run start",
+    "test": "turbo run test",
+    "prepare": "husky"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "",
+  "packageManager": "pnpm@10.10.0",
+  "devDependencies": {
+    "husky": "^9.1.7",
+    "turbo": "2.5.2"
+  }
+}

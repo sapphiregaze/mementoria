@@ -1,0 +1,34 @@
+{
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**", "build/**"]
+    },
+    "check": {
+      "outputs": []
+    },
+    "check-fix": {
+      "outputs": []
+    },
+    "dev": {
+      "dependsOn": ["^build"],
+      "cache": false,
+      "persistent": true
+    },
+    "format": {
+      "outputs": []
+    },
+    "lint": {
+      "outputs": []
+    },
+    "serve": {
+      "outputs": []
+    },
+    "start": {
+      "outputs": []
+    },
+    "test": {
+      "outputs": []
+    }
+  }
+}

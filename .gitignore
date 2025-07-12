@@ -1,0 +1,12 @@
+node_modules/
+.turbo/
+
+dist/
+build/
+
+.env
+.env.*
+!.env.example
+
+.DS_Store
+*.local
