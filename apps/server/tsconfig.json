@@ -17,7 +17,7 @@
     "strictFunctionTypes": true,
 
     "module": "NodeNext",
-    "outDir": "dist",
+    "outDir": "dist/main",
     "sourceMap": true,
     "forceConsistentCasingInFileNames": true,
 

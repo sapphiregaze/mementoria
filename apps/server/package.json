@@ -3,13 +3,13 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
-		"build": "rimraf dist && tsc",
+		"build": "rimraf dist && tsc && cp -R ./src/generated/ ./dist/",
 		"check": "biome check",
 		"check-fix": "biome check --fix",
 		"dev": "nodemon",
 		"format": "biome format",
 		"lint": "biome lint",
-		"serve": "node dist/server.js",
+		"serve": "node dist/main/server.js",
 		"start": "pnpm serve",
 		"test": "vitest run --pass-with-no-tests"
 	},
