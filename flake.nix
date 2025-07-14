@@ -34,12 +34,25 @@
         {
           default = pkgs.mkShell {
             packages = with pkgs; [
+              # node runtime & package manager
               node2nix
               nodejs
               nodePackages.pnpm
 
+              # typescript compiler
+              typescript
+
+              # monorepo build system
               turbo
+
+              # typescript orm
+              prisma
+              prisma-engines
             ];
+
+            env = {
+              PRISMA_QUERY_ENGINE_BINARY="${pkgs.prisma-engines}/bin/query-engine";
+            };
           };
         }
       );
