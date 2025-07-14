@@ -44,7 +44,15 @@
 
               # monorepo build system
               turbo
+
+              # typescript orm
+              prisma
+              prisma-engines
             ];
+
+            env = {
+              PRISMA_QUERY_ENGINE_BINARY="${pkgs.prisma-engines}/bin/query-engine";
+            };
           };
         }
       );

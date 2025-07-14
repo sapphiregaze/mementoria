@@ -1,5 +1,5 @@
 {
-  "watch": ["src/main"],
+  "watch": ["src"],
   "ext": "ts",
   "exec": "pnpm dlx tsx src/main/server.ts"
 }
