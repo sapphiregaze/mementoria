@@ -34,10 +34,15 @@
         {
           default = pkgs.mkShell {
             packages = with pkgs; [
+              # node runtime & package manager
               node2nix
               nodejs
               nodePackages.pnpm
 
+              # typescript compiler
+              typescript
+
+              # monorepo build system
               turbo
             ];
           };
