@@ -1,34 +1,37 @@
 {
-  "tasks": {
-    "build": {
-      "dependsOn": ["^build"],
-      "outputs": ["dist/**", "build/**"]
-    },
-    "check": {
-      "outputs": []
-    },
-    "check-fix": {
-      "outputs": []
-    },
-    "dev": {
-      "dependsOn": ["^build"],
-      "cache": false,
-      "persistent": true
-    },
-    "format": {
-      "outputs": []
-    },
-    "lint": {
-      "outputs": []
-    },
-    "serve": {
-      "outputs": []
-    },
-    "start": {
-      "outputs": []
-    },
-    "test": {
-      "outputs": []
-    }
-  }
+	"tasks": {
+		"build": {
+			"dependsOn": ["^build"],
+			"outputs": ["dist/**", "build/**"]
+		},
+		"check": {
+			"outputs": []
+		},
+		"check-fix": {
+			"outputs": []
+		},
+		"dev": {
+			"dependsOn": ["^build"],
+			"cache": false,
+			"persistent": true,
+			"env": ["PRISMA_QUERY_ENGINE_BINARY"]
+		},
+		"format": {
+			"outputs": []
+		},
+		"lint": {
+			"outputs": []
+		},
+		"serve": {
+			"outputs": [],
+			"env": ["PRISMA_QUERY_ENGINE_BINARY"]
+		},
+		"start": {
+			"outputs": [],
+			"env": ["PRISMA_QUERY_ENGINE_BINARY"]
+		},
+		"test": {
+			"outputs": []
+		}
+	}
 }
