@@ -13,14 +13,14 @@ Create a new database and user with the below queries:
 CREATE USER <username> WITH ENCRYPTED PASSWORD '<password>';
 CREATE DATABASE <database_name> OWNER <username>;
 
--- this is needed as prisma needs the create db permission to create a new migration
+-- this is required as prisma needs the create db permission to create a new migration
 ALTER ROLE <username> CREATEDB;
 ```
 
 The database connection string will be (save this as `DATABASE_URL` in `.env`):
 
 ```
-postgresql://<username>:<password>@<ip_address>:<port>/<database_name>?schema=public&sslmode=disable
+postgresql://<username>:<password>@<ip_address>:<port>/<database_name>?schema=public
 ```
 
 ### Prisma
@@ -28,7 +28,7 @@ postgresql://<username>:<password>@<ip_address>:<port>/<database_name>?schema=pu
 Run the below to migrate the database to the current schema and generate the prisma client:
 
 ```
-pnpm dlx prisma migrate dev --name init
+pnpm dlx prisma migrate dev
 ```
 
 ### Environment Variables
@@ -37,5 +37,8 @@ Create a `.env` file in the root of the `server` directory, and add the below co
 
 ```
 PORT=<port>
+BETTER_AUTH_SECRET=<betterauth_secret>
+BETTER_AUTH_URL=<server_url>
 DATABASE_URL=<database_url>
+CLIENT_ORIGIN=<client_origin>
 ```

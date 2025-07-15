@@ -1,19 +1,32 @@
+import path from "node:path";
+import { dirname } from "node:path";
+import { fileURLToPath } from "node:url";
+
 import "dotenv/config";
-import Fastify from "fastify";
+import AutoLoad from "@fastify/autoload";
+import fastifyCors from "@fastify/cors";
 
+import { fastify } from "./lib/fastify.js";
 import { logger } from "./lib/logger.js";
-import prisma from "./lib/prisma.js";
+import { prisma } from "./lib/prisma.js";
 
-const fastify = Fastify({
-  logger: true,
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+fastify.register(AutoLoad, {
+  dir: path.join(__dirname, "routes"),
 });
 
-fastify.get("/health", async (_, reply) => {
-  reply.status(200).send({ status: "UP", timestamp: new Date().toISOString() });
+fastify.register(fastifyCors, {
+  origin: process.env.CLIENT_ORIGIN || "http://localhost:3000",
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
+  credentials: true,
+  maxAge: 86400,
 });
 
 fastify
-  .listen({ port: Number(process.env.PORT), host: "0.0.0.0" })
+  .listen({ port: Number(process.env.PORT), host: "localhost" })
   .then(async () => {
     prisma
       .$connect()
@@ -22,7 +35,9 @@ fastify
         prisma.$disconnect();
       })
       .catch((err) => logger.error(`failed to connect to database: ${err}`));
-    logger.info(`server is listening on http://0.0.0.0:${process.env.PORT}...`);
+    logger.info(
+      `server is listening on http://localhost:${process.env.PORT}...`,
+    );
   })
   .catch((err: Error) => {
     logger.error(`failed to start fastify server: ${err}`);
