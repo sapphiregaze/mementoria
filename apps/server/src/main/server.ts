@@ -1,13 +1,20 @@
+import path from "node:path";
+import { dirname } from "node:path";
+import { fileURLToPath } from "node:url";
+
 import "dotenv/config";
+import AutoLoad from "@fastify/autoload";
 import fastifyCors from "@fastify/cors";
-import Fastify from "fastify";
 
-import { auth } from "./lib/auth.js";
+import { fastify } from "./lib/fastify.js";
 import { logger } from "./lib/logger.js";
-import prisma from "./lib/prisma.js";
+import { prisma } from "./lib/prisma.js";
 
-const fastify = Fastify({
-  logger: true,
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+fastify.register(AutoLoad, {
+  dir: path.join(__dirname, "routes"),
 });
 
 fastify.register(fastifyCors, {
@@ -18,45 +25,8 @@ fastify.register(fastifyCors, {
   maxAge: 86400,
 });
 
-fastify.get("/health", async (_, reply) => {
-  reply.status(200).send({ status: "UP", timestamp: new Date().toISOString() });
-});
-
-fastify.route({
-  method: ["GET", "POST"],
-  url: "/api/auth/*",
-  async handler(request, reply) {
-    try {
-      const url = new URL(request.url, `http://${request.headers.host}`);
-
-      const headers = new Headers();
-      for (const [key, value] of Object.entries(request.headers)) {
-        if (value) headers.append(key, value.toString());
-      }
-
-      const req = new Request(url.toString(), {
-        method: request.method,
-        headers,
-        body: request.body ? JSON.stringify(request.body) : undefined,
-      });
-
-      const response = await auth.handler(req);
-
-      reply.status(response.status);
-      response.headers.forEach((value, key) => reply.header(key, value));
-      reply.send(response.body ? await response.text() : null);
-    } catch (error) {
-      fastify.log.error("Authentication Error:", error);
-      reply.status(500).send({
-        error: "Internal authentication error",
-        code: "AUTH_FAILURE",
-      });
-    }
-  },
-});
-
 fastify
-  .listen({ port: Number(process.env.PORT), host: "0.0.0.0" })
+  .listen({ port: Number(process.env.PORT), host: "localhost" })
   .then(async () => {
     prisma
       .$connect()
@@ -65,7 +35,9 @@ fastify
         prisma.$disconnect();
       })
       .catch((err) => logger.error(`failed to connect to database: ${err}`));
-    logger.info(`server is listening on http://0.0.0.0:${process.env.PORT}...`);
+    logger.info(
+      `server is listening on http://localhost:${process.env.PORT}...`,
+    );
   })
   .catch((err: Error) => {
     logger.error(`failed to start fastify server: ${err}`);
