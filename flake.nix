@@ -48,6 +48,9 @@
               # typescript orm
               prisma
               prisma-engines
+
+              # json processor
+              jq
             ];
 
             env = {
