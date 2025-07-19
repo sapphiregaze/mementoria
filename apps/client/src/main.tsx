@@ -32,4 +32,4 @@ if (rootElement && !rootElement.innerHTML) {
   );
 }
 
-reportWebVitals();
+reportWebVitals(console.log);
