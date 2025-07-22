@@ -42,3 +42,5 @@ BETTER_AUTH_URL=<server_url>
 DATABASE_URL=<database_url>
 CLIENT_ORIGIN=<client_origin>
 ```
+
+Testing
