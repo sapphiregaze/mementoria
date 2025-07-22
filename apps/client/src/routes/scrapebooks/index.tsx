@@ -11,7 +11,7 @@ import { DraggableItem } from "@/components/DraggableItem";
 import { motion } from "framer-motion";
 
 export const Route = createFileRoute("/scrapebooks/")({
-  component: ScrapebooksPageComponent,
+  component: Scrapebooks,
 });
 interface PageItem {
   id: string;
@@ -37,7 +37,7 @@ const variants = {
   exit: { rotateY: 0, scale: 1 },
 };
 
-export default function ScrapebooksPageComponent() {
+export default function Scrapebooks() {
   const [books, setBooks] = useState<Scrapbook[]>([]);
   const [newTitle, setNewTitle] = useState("");
   const [openBook, setOpenBook] = useState<Scrapbook | null>(null);
