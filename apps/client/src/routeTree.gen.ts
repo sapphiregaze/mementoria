@@ -10,20 +10,13 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SettingsRouteImport } from './routes/settings'
-import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AppRouteImport } from './routes/app'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ScrapebooksIndexRouteImport } from './routes/scrapebooks/index'
-import { Route as LoginIndexRouteImport } from './routes/login/index'
 
 const SettingsRoute = SettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthRoute = AuthRouteImport.update({
-  id: '/auth',
-  path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AppRoute = AppRouteImport.update({
@@ -41,58 +34,38 @@ const ScrapebooksIndexRoute = ScrapebooksIndexRouteImport.update({
   path: '/scrapebooks/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const LoginIndexRoute = LoginIndexRouteImport.update({
-  id: '/login/',
-  path: '/login/',
-  getParentRoute: () => rootRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/app': typeof AppRoute
-  '/auth': typeof AuthRoute
   '/settings': typeof SettingsRoute
-  '/login': typeof LoginIndexRoute
   '/scrapebooks': typeof ScrapebooksIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/app': typeof AppRoute
-  '/auth': typeof AuthRoute
   '/settings': typeof SettingsRoute
-  '/login': typeof LoginIndexRoute
   '/scrapebooks': typeof ScrapebooksIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/app': typeof AppRoute
-  '/auth': typeof AuthRoute
   '/settings': typeof SettingsRoute
-  '/login/': typeof LoginIndexRoute
   '/scrapebooks/': typeof ScrapebooksIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/app' | '/auth' | '/settings' | '/login' | '/scrapebooks'
+  fullPaths: '/' | '/app' | '/settings' | '/scrapebooks'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/app' | '/auth' | '/settings' | '/login' | '/scrapebooks'
-  id:
-    | '__root__'
-    | '/'
-    | '/app'
-    | '/auth'
-    | '/settings'
-    | '/login/'
-    | '/scrapebooks/'
+  to: '/' | '/app' | '/settings' | '/scrapebooks'
+  id: '__root__' | '/' | '/app' | '/settings' | '/scrapebooks/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AppRoute: typeof AppRoute
-  AuthRoute: typeof AuthRoute
   SettingsRoute: typeof SettingsRoute
-  LoginIndexRoute: typeof LoginIndexRoute
   ScrapebooksIndexRoute: typeof ScrapebooksIndexRoute
 }
 
@@ -103,13 +76,6 @@ declare module '@tanstack/react-router' {
       path: '/settings'
       fullPath: '/settings'
       preLoaderRoute: typeof SettingsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/auth': {
-      id: '/auth'
-      path: '/auth'
-      fullPath: '/auth'
-      preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/app': {
@@ -133,22 +99,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ScrapebooksIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/login/': {
-      id: '/login/'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof LoginIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AppRoute: AppRoute,
-  AuthRoute: AuthRoute,
   SettingsRoute: SettingsRoute,
-  LoginIndexRoute: LoginIndexRoute,
   ScrapebooksIndexRoute: ScrapebooksIndexRoute,
 }
 export const routeTree = rootRouteImport
