@@ -5,6 +5,7 @@ import ReactDOM from "react-dom/client";
 import { routeTree } from "./routeTree.gen";
 
 import "./styles.css";
+import "@fontsource-variable/source-serif-4/opsz.css";
 import reportWebVitals from "./reportWebVitals.ts";
 
 const router = createRouter({
