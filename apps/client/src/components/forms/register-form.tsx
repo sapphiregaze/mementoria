@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { authClient } from "@/lib/auth-client";
 import { Link } from "@tanstack/react-router";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { useState } from "react";
@@ -58,6 +59,12 @@ export function RegisterForm() {
       }
 
       console.log("Registration attempt:", formData);
+      await authClient.signUp.email({
+        name: `${formData.firstName} ${formData.lastName}`,
+        email: formData.email,
+        password: formData.password,
+      });
+      console.log("Registration successful");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Registration failed");
     } finally {

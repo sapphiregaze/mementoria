@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { authClient } from "@/lib/auth-client";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { useState } from "react";
 
@@ -35,6 +36,11 @@ export function LoginForm() {
       }
 
       console.log("Login attempt:", formData);
+      await authClient.signIn.email({
+        email: formData.email,
+        password: formData.password,
+      });
+      console.log("Signin successful");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Login failed");
     } finally {
