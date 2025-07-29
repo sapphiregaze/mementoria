@@ -8,8 +8,6 @@ export default function Header() {
           <Link to="/">Mementoria</Link>
           <Link to="/scrapebooks">My Scrapebooks</Link>
           <Link to="/settings">Settings</Link>
-          {/* <Link to="/about">About</Link> */}
-          {/* <Link to="/logout">Log Out</Link> */}
         </div>
       </nav>
     </header>
