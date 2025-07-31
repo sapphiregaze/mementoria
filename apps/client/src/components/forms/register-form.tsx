@@ -30,8 +30,6 @@ export function RegisterForm() {
     setError("");
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
       if (
         !formData.firstName ||
         !formData.lastName ||
@@ -58,13 +56,21 @@ export function RegisterForm() {
         throw new Error("Please agree to the terms and conditions");
       }
 
-      console.log("Registration attempt:", formData);
-      await authClient.signUp.email({
-        name: `${formData.firstName} ${formData.lastName}`,
-        email: formData.email,
-        password: formData.password,
-      });
-      console.log("Registration successful");
+      await authClient.signUp.email(
+        {
+          name: `${formData.firstName} ${formData.lastName}`,
+          email: formData.email,
+          password: formData.password,
+        },
+        {
+          onSuccess: () => {
+            console.log("Registration successful");
+          },
+          onError: (error) => {
+            console.log(`Error registering user: ${error.error.message}`);
+          },
+        },
+      );
     } catch (err) {
       setError(err instanceof Error ? err.message : "Registration failed");
     } finally {

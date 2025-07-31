@@ -25,8 +25,6 @@ export function LoginForm() {
     setError("");
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
       if (!formData.email || !formData.password) {
         throw new Error("Please fill in all fields");
       }
@@ -35,12 +33,20 @@ export function LoginForm() {
         throw new Error("Please enter a valid email address");
       }
 
-      console.log("Login attempt:", formData);
-      await authClient.signIn.email({
-        email: formData.email,
-        password: formData.password,
-      });
-      console.log("Signin successful");
+      await authClient.signIn.email(
+        {
+          email: formData.email,
+          password: formData.password,
+        },
+        {
+          onSuccess: () => {
+            console.log("Signin successful");
+          },
+          onError: (error) => {
+            console.log(`Error signing in: ${error.error.message}`);
+          },
+        },
+      );
     } catch (err) {
       setError(err instanceof Error ? err.message : "Login failed");
     } finally {
