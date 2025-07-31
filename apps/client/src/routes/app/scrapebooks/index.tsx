@@ -7,11 +7,11 @@ import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 
-import { DraggableItem } from "@/components/DraggableItem";
+import { DraggableItem } from "@/components/draggable-item";
 import { motion } from "framer-motion";
 
-export const Route = createFileRoute("/scrapebooks/")({
-  component: Scrapebooks,
+export const Route = createFileRoute("/app/scrapebooks/")({
+  component: ScrapebooksPage,
 });
 interface PageItem {
   id: string;
@@ -37,7 +37,7 @@ const variants = {
   exit: { rotateY: 0, scale: 1 },
 };
 
-export default function Scrapebooks() {
+export default function ScrapebooksPage() {
   const [books, setBooks] = useState<Scrapbook[]>([]);
   const [newTitle, setNewTitle] = useState("");
   const [openBook, setOpenBook] = useState<Scrapbook | null>(null);
