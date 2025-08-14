@@ -8,11 +8,13 @@ import { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 
 import { DraggableItem } from "@/components/draggable-item";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
+import { BookOpen, ChevronLeft, ChevronRight, Plus } from "lucide-react";
 
 export const Route = createFileRoute("/app/scrapebooks/")({
   component: ScrapebooksPage,
 });
+
 interface PageItem {
   id: string;
   type: "text" | "image" | "audio";
@@ -22,6 +24,8 @@ interface PageItem {
 }
 
 interface Page {
+  id: string;
+  title: string;
   items: PageItem[];
 }
 
@@ -37,6 +41,28 @@ const variants = {
   exit: { rotateY: 0, scale: 1 },
 };
 
+// Page flip animation variants
+const pageFlipVariants = {
+  enter: (direction: number) => ({
+    x: direction > 0 ? 1000 : -1000,
+    rotateY: direction > 0 ? -90 : 90,
+    opacity: 0,
+    scale: 0.8,
+  }),
+  center: {
+    x: 0,
+    rotateY: 0,
+    opacity: 1,
+    scale: 1,
+  },
+  exit: (direction: number) => ({
+    x: direction < 0 ? 1000 : -1000,
+    rotateY: direction < 0 ? 90 : -90,
+    opacity: 0,
+    scale: 0.8,
+  }),
+};
+
 export default function ScrapebooksPage() {
   const [books, setBooks] = useState<Scrapbook[]>([]);
   const [newTitle, setNewTitle] = useState("");
@@ -44,13 +70,21 @@ export default function ScrapebooksPage() {
   const [currentPageIndex, setCurrentPageIndex] = useState(0);
   const [newText, setNewText] = useState("");
   const [pageInput, setPageInput] = useState(1);
+  const [direction, setDirection] = useState(0);
+  const [isFlipping, setIsFlipping] = useState(false);
 
   const addBook = () => {
     if (!newTitle.trim()) return;
     const newBook: Scrapbook = {
       id: uuidv4(),
       title: newTitle.trim(),
-      pages: [{ items: [] }],
+      pages: [
+        {
+          id: uuidv4(),
+          title: "Page 1",
+          items: [],
+        },
+      ],
     };
     setBooks([...books, newBook]);
     setNewTitle("");
@@ -103,8 +137,67 @@ export default function ScrapebooksPage() {
     }
   };
 
+  const goToPage = (newPageIndex: number) => {
+    if (isFlipping || newPageIndex === currentPageIndex) return;
+
+    // Ensure the page exists before navigating to it
+    if (openBook && newPageIndex >= openBook.pages.length) {
+      const updated = { ...openBook };
+      while (updated.pages.length <= newPageIndex) {
+        updated.pages.push({
+          id: uuidv4(),
+          title: `Page ${updated.pages.length + 1}`,
+          items: [],
+        });
+      }
+      updateBook(updated);
+    }
+
+    setIsFlipping(true);
+    setDirection(newPageIndex > currentPageIndex ? 1 : -1);
+
+    setTimeout(() => {
+      setCurrentPageIndex(newPageIndex);
+      setPageInput(newPageIndex + 1);
+      setIsFlipping(false);
+    }, 300);
+  };
+
+  const nextPage = () => {
+    if (!openBook || isFlipping) return;
+
+    if (currentPageIndex + 1 >= openBook.pages.length) {
+      const updated = { ...openBook };
+      updated.pages.push({
+        id: uuidv4(),
+        title: `Page ${updated.pages.length + 1}`,
+        items: [],
+      });
+      updateBook(updated);
+    }
+    goToPage(currentPageIndex + 1);
+  };
+
+  const previousPage = () => {
+    if (isFlipping) return;
+    goToPage(Math.max(0, currentPageIndex - 1));
+  };
+
+  const addNewPage = () => {
+    if (!openBook || isFlipping) return;
+
+    const updated = { ...openBook };
+    updated.pages.push({
+      id: uuidv4(),
+      title: `Page ${updated.pages.length + 1}`,
+      items: [],
+    });
+    updateBook(updated);
+    goToPage(updated.pages.length - 1);
+  };
+
   return (
-    <div className="p-6 ">
+    <div className="p-6">
       {openBook ? (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
@@ -113,23 +206,62 @@ export default function ScrapebooksPage() {
               Close Book
             </Button>
           </div>
-          <div className="relative w-full h-[600px] bg-[#fdfaf3] border shadow-inner overflow-hidden">
-            {openBook.pages[currentPageIndex].items.map((item) => (
-              <DraggableItem
-                key={item.id}
-                item={item}
-                onStop={(x, y) => handleDrag(item.id, x, y)}
-              />
-            ))}
+
+          {/* Page Display with Flip Animation */}
+          <div className="relative w-full h-[600px] border shadow-inner overflow-hidden rounded-lg">
+            <AnimatePresence mode="wait" custom={direction}>
+              <motion.div
+                key={currentPageIndex}
+                custom={direction}
+                variants={pageFlipVariants}
+                initial="enter"
+                animate="center"
+                exit="exit"
+                transition={{
+                  duration: 0.6,
+                  ease: "easeInOut",
+                }}
+                style={{
+                  position: "absolute",
+                  width: "100%",
+                  height: "100%",
+                  transformStyle: "preserve-3d",
+                }}
+                className="w-full h-full"
+              >
+                {/* Paper background for each page */}
+                <div
+                  className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+                  style={{ backgroundImage: 'url("/paper.png")' }}
+                />
+
+                {openBook.pages[currentPageIndex].items.map((item) => (
+                  <DraggableItem
+                    key={item.id}
+                    item={item}
+                    onStop={(x, y) => handleDrag(item.id, x, y)}
+                  />
+                ))}
+
+                {/* Page number indicator */}
+                <div className="absolute bottom-4 right-4 bg-white/80 px-3 py-1 rounded-full text-sm font-medium shadow-sm">
+                  Page {currentPageIndex + 1} of {openBook.pages.length}
+                </div>
+              </motion.div>
+            </AnimatePresence>
           </div>
 
-          <Input
-            placeholder="Add text"
-            value={newText}
-            onChange={(e) => setNewText(e.target.value)}
-          />
-          <div className="flex flex-wrap gap-2">
-            <Button onClick={addTextToPage}>Add Text</Button>
+          {/* Content Input */}
+          <div className="flex gap-2">
+            <Input
+              placeholder="Add text to this page..."
+              value={newText}
+              onChange={(e) => setNewText(e.target.value)}
+              className="flex-1"
+            />
+            <Button onClick={addTextToPage} disabled={!newText.trim()}>
+              Add Text
+            </Button>
             <div className="flex items-center gap-2 border p-2 rounded bg-white">
               <input
                 type="file"
@@ -139,47 +271,97 @@ export default function ScrapebooksPage() {
                 }
               />
             </div>
+          </div>
+
+          {/* Page Navigation */}
+          <div className="flex items-center justify-center gap-4">
             <Button
-              onClick={() => setCurrentPageIndex((p) => Math.max(p - 1, 0))}
+              onClick={previousPage}
+              disabled={currentPageIndex === 0 || isFlipping}
+              variant="outline"
+              className="flex items-center gap-2"
             >
+              <ChevronLeft className="h-4 w-4" />
               Previous
             </Button>
 
-            <Input
-              type="number"
-              className="w-16"
-              value={pageInput}
-              onChange={(e) => setPageInput(Number(e.target.value))}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  const page = Math.max(
-                    1,
-                    Math.min(openBook.pages.length, pageInput),
-                  );
-                  setCurrentPageIndex(page - 1);
-                }
-              }}
-            />
+            <div className="flex items-center gap-2">
+              <Input
+                type="number"
+                className="w-20 text-center"
+                value={pageInput}
+                onChange={(e) => setPageInput(Number(e.target.value))}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    const page = Math.max(
+                      1,
+                      Math.min(openBook.pages.length, pageInput),
+                    );
+                    goToPage(page - 1);
+                  }
+                }}
+                min={1}
+                max={openBook.pages.length}
+              />
+              <span className="text-sm text-muted-foreground">
+                of {openBook.pages.length}
+              </span>
+            </div>
+
             <Button
-              onClick={() => {
-                const updated = { ...openBook };
-                if (currentPageIndex + 1 >= updated.pages.length) {
-                  updated.pages.push({ items: [] });
-                  updateBook(updated);
-                }
-                setCurrentPageIndex((p) => p + 1);
-              }}
+              onClick={nextPage}
+              disabled={isFlipping}
+              variant="outline"
+              className="flex items-center gap-2"
             >
               Next
+              <ChevronRight className="h-4 w-4" />
             </Button>
 
-            <Button variant="secondary" onClick={() => setOpenBook(null)}>
-              Close Book
+            <Button
+              onClick={addNewPage}
+              disabled={isFlipping}
+              variant="secondary"
+              className="flex items-center gap-2"
+            >
+              <Plus className="h-4 w-4" />
+              New Page
             </Button>
           </div>
-          <p className="text-center text-sm text-gray-500">
-            Page {currentPageIndex + 1}
-          </p>
+
+          {/* Page Thumbnails */}
+          <div className="flex gap-2 overflow-x-auto pb-2">
+            {openBook.pages.map((page, index) => (
+              <button
+                type="button"
+                key={page.id ?? `${page.title ?? "page"}-${index}`}
+                onClick={() => goToPage(index)}
+                disabled={isFlipping}
+                className={`flex-shrink-0 w-16 h-20 border-2 rounded-lg p-2 transition-all ${
+                  index === currentPageIndex
+                    ? "border-primary bg-primary/10"
+                    : "border-gray-200 hover:border-gray-300"
+                } ${isFlipping ? "opacity-50" : ""}`}
+              >
+                <div
+                  className="w-full h-full rounded flex items-center justify-center text-xs text-muted-foreground bg-cover bg-center bg-no-repeat"
+                  style={{ backgroundImage: 'url("/paper.png")' }}
+                >
+                  {page.items.length > 0 ? (
+                    <div className="text-center bg-white/80 px-2 py-1 rounded">
+                      <div className="font-medium">{page.items.length}</div>
+                      <div>items</div>
+                    </div>
+                  ) : (
+                    <div className="text-center bg-white/80 px-2 py-1 rounded">
+                      <div className="font-medium">Empty</div>
+                      <div>page</div>
+                    </div>
+                  )}
+                </div>
+              </button>
+            ))}
+          </div>
         </div>
       ) : (
         <div className="space-y-4">
@@ -196,8 +378,12 @@ export default function ScrapebooksPage() {
               value={newTitle}
               onChange={(e) => setNewTitle(e.target.value)}
             />
-            <Button onClick={addBook}>Add Book</Button>
+            <Button onClick={addBook} disabled={!newTitle.trim()}>
+              <BookOpen className="h-4 w-4 mr-2" />
+              Add Book
+            </Button>
           </div>
+
           <div className="flex flex-wrap gap-4 py-2">
             {books.map((book) => (
               <Card
@@ -221,6 +407,9 @@ export default function ScrapebooksPage() {
 
                 <CardContent className="p-4">
                   <h3 className="text-lg font-semibold">{book.title}</h3>
+                  <p className="text-sm text-muted-foreground">
+                    {book.pages.length} page{book.pages.length !== 1 ? "s" : ""}
+                  </p>
                 </CardContent>
               </Card>
             ))}
