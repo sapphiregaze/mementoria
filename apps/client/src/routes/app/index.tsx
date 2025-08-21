@@ -6,6 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { useSession } from "@/hooks/use-session";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { Book, Clock, Plus } from "lucide-react";
 
@@ -14,10 +15,8 @@ export const Route = createFileRoute("/app/")({
 });
 
 function DashboardPage() {
-  // Placeholder user name - will be replaced with real user data later
-  const userName = "Jane Doe";
+  const { session } = useSession();
 
-  // Empty array for now - will show content when scrapbooks are actually created
   const recentScrapbooks: Array<{
     id: string;
     title: string;
@@ -26,17 +25,15 @@ function DashboardPage() {
   }> = [];
   return (
     <div className="space-y-8">
-      {/* Welcome Message */}
       <div className="text-center">
         <h1 className="text-3xl font-bold text-foreground mb-2">
-          Welcome, {userName}!
+          Welcome, {session?.user.name}!
         </h1>
         <p className="text-muted-foreground text-lg">
           Ready to embrace your whimsy?
         </p>
       </div>
 
-      {/* Recent Scrapbooks Section */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-2xl font-semibold text-foreground flex items-center gap-2">

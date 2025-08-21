@@ -23,6 +23,9 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar";
+import { useSession } from "@/hooks/use-session";
+import { authClient } from "@/lib/auth-client";
+import { initials } from "@/lib/utils";
 
 const navigationItems = [
   {
@@ -57,6 +60,7 @@ const settingsItems = [
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const location = useLocation();
+  const { session } = useSession();
 
   return (
     <Sidebar {...props}>
@@ -124,12 +128,16 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 <SidebarMenuButton className="w-full px-3 py-6">
                   <Avatar className="h-6 w-6">
                     <AvatarImage src="/placeholder.svg" alt="User" />
-                    <AvatarFallback>JD</AvatarFallback>
+                    <AvatarFallback>
+                      {initials(session?.user.name as string)}
+                    </AvatarFallback>
                   </Avatar>
                   <div className="flex flex-col items-start text-left">
-                    <span className="text-sm font-medium">Jane Doe</span>
+                    <span className="text-sm font-medium">
+                      {session?.user.name}
+                    </span>
                     <span className="text-xs text-muted-foreground">
-                      jane.doe@example.com
+                      {session?.user.email}
                     </span>
                   </div>
                 </SidebarMenuButton>
@@ -138,7 +146,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 side="top"
                 className="w-[--radix-popper-anchor-width]"
               >
-                <Link to="/">
+                <Link
+                  to="/"
+                  onClick={async () =>
+                    await authClient.revokeSession({
+                      token: session?.session.token as string,
+                    })
+                  }
+                >
                   <DropdownMenuItem>
                     <LogOut className="mr-2 h-4 w-4" />
                     <span>Log out</span>
