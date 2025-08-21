@@ -9,6 +9,7 @@ import { authClient } from "@/lib/auth-client";
 import { Link } from "@tanstack/react-router";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
 
 export function RegisterForm() {
   const [formData, setFormData] = useState({
@@ -64,10 +65,10 @@ export function RegisterForm() {
         },
         {
           onSuccess: () => {
-            console.log("Registration successful");
+            toast("Registration Successful");
           },
           onError: (error) => {
-            console.log(`Error registering user: ${error.error.message}`);
+            toast(`${error.error.message}`);
           },
         },
       );

@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { Moon, Sun } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -10,15 +11,12 @@ function App() {
   const [isDark, setIsDark] = useState(false);
 
   useEffect(() => {
-    // Check if dark mode is active
     const checkDarkMode = () => {
       setIsDark(document.documentElement.classList.contains("dark"));
     };
 
-    // Initial check
     checkDarkMode();
 
-    // Watch for theme changes
     const observer = new MutationObserver(checkDarkMode);
     observer.observe(document.documentElement, {
       attributes: true,
@@ -38,7 +36,6 @@ function App() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background relative">
-      {/* Theme toggle button */}
       <button
         type="button"
         onClick={toggleTheme}
@@ -61,19 +58,9 @@ function App() {
         </div>
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Link
-            to="/auth"
-            className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-11 px-8"
-          >
-            Login / Register
-          </Link>
-
-          <Link
-            to="/app"
-            className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-secondary text-secondary-foreground hover:bg-secondary/80 h-11 px-8"
-          >
-            Go to Dashboard
-          </Link>
+          <Button>
+            <Link to="/auth">Login / Register</Link>
+          </Button>
         </div>
       </div>
     </div>

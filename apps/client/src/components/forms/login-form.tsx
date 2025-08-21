@@ -6,10 +6,13 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { authClient } from "@/lib/auth-client";
+import { useRouter } from "@tanstack/react-router";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
 
 export function LoginForm() {
+  const router = useRouter();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -40,10 +43,11 @@ export function LoginForm() {
         },
         {
           onSuccess: () => {
-            console.log("Signin successful");
+            toast("Login Successful");
+            router.navigate({ to: "/app" });
           },
           onError: (error) => {
-            console.log(`Error signing in: ${error.error.message}`);
+            toast(`${error.error.message}`);
           },
         },
       );
