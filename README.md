@@ -146,7 +146,7 @@ Originally built as a collaborative team project, then extended independently.
 
 | Name | Role |
 |---|---|
-| Chilawo Munene | Tech Lead — architecture, full-stack development, continued solo development |
+| Chilawo Munene | Frontend development |
 | Jasmine Huang | Backend development |
 | Peilu Tu | Frontend development |
 | Rita Osi | Backend development |
